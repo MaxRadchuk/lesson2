@@ -1,0 +1,38 @@
+services:
+  # Наша база данных
+  db:
+    image: postgres
+    container_name: my-postgres
+    networks:
+      - my-learning-net
+    environment:
+      - POSTGRES_PASSWORD  # Берется из .env
+      - PGDATA=/var/lib/postgresql/data/pgdata # Указываем подпапку для данных
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+  
+  web:
+    image: httpd:latest
+    container_name: my-apache-web
+    networks:
+      - my-learning-net
+    ports:
+      - "8087:80"
+    volumes:
+     # - ./my-html-files:/usr/local/apache2/htdocs/
+       - ./:/usr/local/apache2/htdocs/
+  
+  # Наш веб-интерфейс
+  adminer:
+    image: adminer
+    container_name: my-adminer
+    networks:
+      - my-learning-net
+    ports:
+      - "8086:8080"
+    depends_on:
+      - db
+
+networks:
+  my-learning-net:
+    driver: bridge
